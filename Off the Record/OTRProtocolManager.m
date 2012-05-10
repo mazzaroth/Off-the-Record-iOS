@@ -38,7 +38,7 @@ static OTRProtocolManager *sharedManager = nil;
     {
         self.oscarManager = [[OTROscarManager alloc] init];
         self.xmppManager = [[OTRXMPPManager alloc] init];
-        self.encryptionManager = [[OTREncryptionManager alloc] init];
+        self.encryptionManager = [[OTRKit alloc] init];
         self.settingsManager = [[OTRSettingsManager alloc] init];
         self.buddyList = [[OTRBuddyList alloc] init];
 

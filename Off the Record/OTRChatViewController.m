@@ -7,7 +7,7 @@
 //
 
 #import "OTRChatViewController.h"
-#import "OTREncryptionManager.h"
+#import "OTRKit.h"
 #import "privkey.h"
 #import <QuartzCore/QuartzCore.h>
 #import "Strings.h"
@@ -311,14 +311,14 @@
 
 - (void) setBuddy:(OTRBuddy *)newBuddy {
     if(buddy) {
-        [[NSNotificationCenter defaultCenter] removeObserver:self name:ENCRYPTION_STATE_NOTIFICATION object:buddy];
+        [[NSNotificationCenter defaultCenter] removeObserver:self name:OTREncryptionStateNotification object:buddy];
         [[NSNotificationCenter defaultCenter] removeObserver:self name:MESSAGE_PROCESSED_NOTIFICATION object:buddy];
     }
     
     buddy = newBuddy;
     self.title = newBuddy.displayName;
     
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(encryptionStateChangeNotification:) name:ENCRYPTION_STATE_NOTIFICATION object:buddy];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(encryptionStateChangeNotification:) name:OTREncryptionStateNotification object:buddy];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(messageProcessedNotification:) name:MESSAGE_PROCESSED_NOTIFICATION object:buddy];
     
     [self refreshContext];
