@@ -12,6 +12,7 @@
 #import <QuartzCore/QuartzCore.h>
 #import "Strings.h"
 #import "OTRDoubleSetting.h"
+#import "OTREncryptionManager.h"
 
 #define kTabBarHeight 49
 #define kSendButtonWidth 60
@@ -324,7 +325,9 @@
 }
 
 - (void) refreshContext {
-    self.context = otrl_context_find(protocolManager.encryptionManager.userState, [buddy.accountName UTF8String],[[self.protocolManager accountNameForProtocol:buddy.protocol] UTF8String], [buddy.protocol UTF8String],NO,NULL,NULL, NULL);
+  
+    OTREncryptionManager *encryptionManager = [OTREncryptionManager sharedEncryptionManager];
+    self.context = otrl_context_find(encryptionManager.userState, [buddy.accountName UTF8String],[[self.protocolManager accountNameForProtocol:buddy.protocol] UTF8String], [buddy.protocol UTF8String],NO,NULL,NULL, NULL);
 }
 
 - (void) setBuddy:(OTRBuddy *)newBuddy {
@@ -523,6 +526,8 @@
 
 - (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex
 {
+    OTREncryptionManager *encryptionManager = [OTREncryptionManager sharedEncryptionManager];
+
     NSLog(@"buttonIndex: %d",buttonIndex);
     if(actionSheet.tag == 420)
     {
@@ -535,7 +540,7 @@
                 
                 Fingerprint *fingerprint = context->active_fingerprint;
                 
-                otrl_privkey_fingerprint(protocolManager.encryptionManager.userState, our_hash, context->accountname, context->protocol);
+                otrl_privkey_fingerprint(encryptionManager.userState, our_hash, context->accountname, context->protocol);
                 NSString *msg = nil;
                 if(fingerprint && fingerprint->fingerprint) {
                     otrl_privkey_hash_to_human(their_hash, fingerprint->fingerprint);

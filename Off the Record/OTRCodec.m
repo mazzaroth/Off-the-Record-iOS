@@ -8,10 +8,10 @@
 
 #import "OTRCodec.h"
 #import "OTRBuddyListViewController.h"
-#import "OTRProtocolManager.h"
+#import "OTREncryptionManager.h"
 #import "privkey.h"
 #import "message.h"
-
+#import "proto.h"
 #define PRIVKEYFNAME @"otr.private_key"
 #define STOREFNAME @"otr.fingerprints"
 
@@ -45,11 +45,10 @@ static void create_privkey_cb(void *opdata, const char *accountname,
     privf = fopen([path UTF8String], "w+b");
     
     //otrg_plugin_create_privkey(accountname, protocol);
-    OTRProtocolManager *protocolManager = [OTRProtocolManager sharedInstance];
-    [protocolManager.encryptionManager protectFileWithPath:path];
-    
-    
-    otrl_privkey_generate_FILEp(protocolManager.encryptionManager.userState, privf, accountname, protocol);
+    OTREncryptionManager *encryptionManager = [OTREncryptionManager sharedEncryptionManager];
+
+    [encryptionManager protectFileWithPath:path];
+    otrl_privkey_generate_FILEp(encryptionManager.userState, privf, accountname, protocol);
     fclose(privf);
 }
 
@@ -147,11 +146,10 @@ static void confirm_fingerprint_cb(void *opdata, OtrlUserState us,
     [alert release];*/
     char our_hash[45], their_hash[45];
     
-    OTRProtocolManager *protocolManager = [OTRProtocolManager sharedInstance];
-    
-    ConnContext *context = otrl_context_find(protocolManager.encryptionManager.userState, username,accountname, protocol,NO,NULL,NULL, NULL);
+    OTREncryptionManager *encryptionManager = [OTREncryptionManager sharedEncryptionManager];
+    ConnContext *context = otrl_context_find(encryptionManager.userState, username,accountname, protocol,NO,NULL,NULL, NULL);
         
-    otrl_privkey_fingerprint(protocolManager.encryptionManager.userState, our_hash, context->accountname, context->protocol);
+    otrl_privkey_fingerprint(encryptionManager.userState, our_hash, context->accountname, context->protocol);
     
     otrl_privkey_hash_to_human(their_hash, fingerprint);
     
@@ -174,11 +172,11 @@ static void write_fingerprints_cb(void *opdata)
     storef = fopen([path UTF8String], "wb");
     
     if (!storef) return;
-    OTRProtocolManager *protocolManager = [OTRProtocolManager sharedInstance];
-    [protocolManager.encryptionManager protectFileWithPath:path];
+    OTREncryptionManager *encryptionManager = [OTREncryptionManager sharedEncryptionManager];
+    [encryptionManager protectFileWithPath:path];
 
     
-    otrl_privkey_write_fingerprints_FILEp(protocolManager.encryptionManager.userState, storef);
+    otrl_privkey_write_fingerprints_FILEp(encryptionManager.userState, storef);
     fclose(storef);
 }
 
@@ -289,9 +287,8 @@ static OtrlMessageAppOps ui_ops = {
     NSString *protocol = theMessage.protocol;
     NSString *myAccountName = theMessage.recipient;
     
-    OTRProtocolManager *protocolManager = [OTRProtocolManager sharedInstance];
-    
-    OtrlUserState userstate = protocolManager.encryptionManager.userState;
+    OTREncryptionManager *encryptionManager = [OTREncryptionManager sharedEncryptionManager];
+    OtrlUserState userstate = encryptionManager.userState;
     
     if(!userstate)
         NSLog(@"userstate is nil!");
@@ -336,9 +333,9 @@ static OtrlMessageAppOps ui_ops = {
     NSString *protocol = theMessage.protocol;
     NSString *sendingAccount = theMessage.sender;
     //NSLog(@"inside encodeMessage: %@ %@ %@ %@",message,recipientAccount,protocol,sendingAccount);
-    OTRProtocolManager *protocolManager = [OTRProtocolManager sharedInstance];
+    OTREncryptionManager *encryptionManager = [OTREncryptionManager sharedEncryptionManager];
     
-    err = otrl_message_sending(protocolManager.encryptionManager.userState, &ui_ops, NULL,
+    err = otrl_message_sending(encryptionManager.userState, &ui_ops, NULL,
                                [sendingAccount UTF8String], [protocol UTF8String], [recipientAccount UTF8String], [message UTF8String], NULL, &newmessage,
                                NULL, NULL);
     NSString *newMessage;

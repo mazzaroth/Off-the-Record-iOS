@@ -14,7 +14,6 @@ static OTRProtocolManager *sharedManager = nil;
 @implementation OTRProtocolManager
 
 @synthesize oscarManager;
-@synthesize encryptionManager;
 @synthesize xmppManager;
 @synthesize buddyList;
 @synthesize settingsManager;
@@ -22,7 +21,6 @@ static OTRProtocolManager *sharedManager = nil;
 - (void) dealloc 
 {
     self.oscarManager = nil;
-    self.encryptionManager = nil;
     self.xmppManager = nil;
     self.buddyList = nil;
     self.settingsManager = nil;
@@ -38,7 +36,6 @@ static OTRProtocolManager *sharedManager = nil;
     {
         self.oscarManager = [[OTROscarManager alloc] init];
         self.xmppManager = [[OTRXMPPManager alloc] init];
-        self.encryptionManager = [[OTREncryptionManager alloc] init];
         self.settingsManager = [[OTRSettingsManager alloc] init];
         self.buddyList = [[OTRBuddyList alloc] init];
 

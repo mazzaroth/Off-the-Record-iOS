@@ -12,6 +12,7 @@
 @interface OTREncryptionManager : NSObject
 
 @property OtrlUserState userState;
++ (OTREncryptionManager *)sharedEncryptionManager;
 - (void) protectFileWithPath:(NSString*)path;
 
 @end

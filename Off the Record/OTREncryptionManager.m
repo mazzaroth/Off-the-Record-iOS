@@ -18,6 +18,15 @@
 
 @synthesize userState;
 
++ (OTREncryptionManager *)sharedEncryptionManager
+{
+  static OTREncryptionManager *sharedEncryptionManager = nil;
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{ sharedEncryptionManager = [[self alloc] init]; });
+  
+  return sharedEncryptionManager;
+}
+
 -(id)init
 {
     self = [super init];
